@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Tournament.Api.Extensions;
 using Tournament.Data.Data;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<TournamentApiContext>(options =>
@@ -21,7 +22,9 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    await app.SeedDataAsync();
 }
+
 
 app.UseHttpsRedirection();
 
