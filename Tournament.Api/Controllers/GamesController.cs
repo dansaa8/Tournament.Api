@@ -26,49 +26,42 @@ namespace Tournament.Api.Controllers
             _uow = uow;
         }
 
-        // GET: api/Games
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<GameDto>>> GetGames()
+        public async Task<ActionResult<IEnumerable<GameDto>>> GetAllGames()
         {
             var allGames = _mapper.Map<IEnumerable<GameDto>>(await _uow.GameRepository.GetAllAsync());
             return Ok(allGames);
         }
 
-        // GET: api/Games/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<GameDto>> GetGame(int id)
+        public async Task<ActionResult<GameDto>> GetOneGame(int id)
         {
             Game? game = await _uow.GameRepository.GetAsync(id);
             var dto = _mapper.Map<GameDto>(game);
             return game == null ? NotFound() : Ok(dto);
         }
 
-        // PUT: api/Games/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutGame(int id, Game updatedGame)
+        public async Task<IActionResult> PutGame(int id, GameUpdateDto reqBody)
         {
-            if (id != updatedGame.Id)
-            {
-                return BadRequest();
-            }
-            Game? existingGame = await _uow.GameRepository.GetAsync(id);
-            if (existingGame == null) return NotFound();
+            Game? game = await _uow.GameRepository.GetAsync(id);
+            if (game == null) return NotFound();
 
-            existingGame = updatedGame;
+            _mapper.Map(reqBody, game);
+
             await _uow.CompleteAsync();
-            return Ok(updatedGame);
+            return Ok(_mapper.Map<GameDto>(game));
         }
 
-        // POST: api/Games
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Game>> PostGame(Game newGame)
+        public async Task<ActionResult<Game>> PostGame(GameCreateDto reqBody)
         {
-            _uow.GameRepository.Add(newGame);
+            var game = _mapper.Map<Game>(reqBody);
+            _uow.GameRepository.Add(game);
             await _uow.CompleteAsync();
 
-            return CreatedAtAction("GetGame", new { id = newGame.Id }, newGame);
+            var dto = _mapper.Map<GameDto>(game);
+            return CreatedAtAction(nameof(GetOneGame), new { id = game.Id }, dto);
         }
 
         // DELETE: api/Games/5
