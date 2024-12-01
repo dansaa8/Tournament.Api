@@ -54,15 +54,15 @@ namespace Tournament.Api.Controllers
             return Ok(_mapper.Map<TournamentDto>(tournament));
         }
 
-        // POST: api/TournamentDetails
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<TournamentDetails>> PostTournamentDetails(TournamentDetails newTournament)
+        public async Task<ActionResult<TournamentDetails>> PostTournament(TournamentCreateDto reqBody)
         {
+            var newTournament = _mapper.Map<TournamentDetails>(reqBody);
             _uow.TournamentRepository.Add(newTournament);
             await _uow.CompleteAsync();
 
-            return CreatedAtAction("GetTournamentDetails", new { id = newTournament.Id }, newTournament);
+            var dto = _mapper.Map<TournamentDto>(newTournament);
+            return CreatedAtAction(nameof(GetOneTournament), new { id = newTournament.Id }, dto);
         }
 
         // DELETE: api/TournamentDetails/5

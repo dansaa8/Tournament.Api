@@ -56,12 +56,12 @@ namespace Tournament.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<Game>> PostGame(GameCreateDto reqBody)
         {
-            var game = _mapper.Map<Game>(reqBody);
-            _uow.GameRepository.Add(game);
+            var newGame = _mapper.Map<Game>(reqBody);
+            _uow.GameRepository.Add(newGame);
             await _uow.CompleteAsync();
 
-            var dto = _mapper.Map<GameDto>(game);
-            return CreatedAtAction(nameof(GetOneGame), new { id = game.Id }, dto);
+            var dto = _mapper.Map<GameDto>(newGame);
+            return CreatedAtAction(nameof(GetOneGame), new { id = newGame.Id }, dto);
         }
 
         [HttpDelete("{id}")]
