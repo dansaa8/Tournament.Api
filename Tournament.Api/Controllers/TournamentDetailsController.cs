@@ -9,6 +9,7 @@ using Tournament.Data.Data;
 using Tournament.Core.Entities;
 using Tournament.Core.Repositories;
 using AutoMapper;
+using Tournament.Core.Dto;
 
 namespace Tournament.Api.Controllers
 {
@@ -26,22 +27,20 @@ namespace Tournament.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TournamentDetails>>> GetAllTournamentDetails()
+        public async Task<ActionResult<IEnumerable<TournamentDto>>> GetAllTournaments()
         {
-            var allTournaments = await _uow.TournamentRepository.GetAllAsync(true);
+            var allTournaments = _mapper.Map<IEnumerable<TournamentDto>>(
+                await _uow.TournamentRepository.GetAllAsync(true));
             return Ok(allTournaments);
         }
 
-        // GET: api/TournamentDetails/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<TournamentDetails>> GetTournamentDetails(int id)
+        public async Task<ActionResult<TournamentDto>> GetOneTournament(int id)
         {
-            TournamentDetails? tournament = await _uow.TournamentRepository.GetAsync(id);
+            var tournament = _mapper.Map<TournamentDto>(await _uow.TournamentRepository.GetAsync(id));
             return tournament == null ? NotFound() : Ok(tournament);
         }
 
-        // PUT: api/TournamentDetails/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTournamentDetails(int id, TournamentDetails updatedTournament)
         {

@@ -64,7 +64,6 @@ namespace Tournament.Api.Controllers
             return CreatedAtAction(nameof(GetOneGame), new { id = game.Id }, dto);
         }
 
-        // DELETE: api/Games/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGame(int id)
         {
