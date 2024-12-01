@@ -15,12 +15,12 @@ namespace Tournament.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TournamentDetailsController : ControllerBase
+    public class TournamentsController : ControllerBase
     {
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _uow;
 
-        public TournamentDetailsController(IMapper mapper, IUnitOfWork uow)
+        public TournamentsController(IMapper mapper, IUnitOfWork uow)
         {
             _mapper = mapper;
             _uow = uow;
@@ -42,17 +42,16 @@ namespace Tournament.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTournamentDetails(int id, TournamentDetails updatedTournament)
+        public async Task<IActionResult> PutTournament(int id, TournamentUpdateDto reqBody)
         {
-            if (id != updatedTournament.Id) return BadRequest();
 
-            TournamentDetails? existingTournament = await _uow.TournamentRepository.GetAsync(id);
-            if (existingTournament == null) return NotFound();
+            TournamentDetails? tournament = await _uow.TournamentRepository.GetAsync(id);
+            if (tournament == null) return NotFound();
 
-            existingTournament = updatedTournament;
+            _mapper.Map(reqBody, tournament);
 
             await _uow.CompleteAsync();
-            return Ok(updatedTournament);
+            return Ok(_mapper.Map<TournamentDto>(tournament));
         }
 
         // POST: api/TournamentDetails
