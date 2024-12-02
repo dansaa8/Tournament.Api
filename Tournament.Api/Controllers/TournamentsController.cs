@@ -28,11 +28,23 @@ namespace Tournament.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TournamentDto>>> GetAllTournaments()
+        public async Task<ActionResult<IEnumerable<TournamentDetails>>> GetAllTournaments(bool includeGames)
         {
-            var allTournaments = _mapper.Map<IEnumerable<TournamentDto>>(
-                await _uow.TournamentRepository.GetAllAsync(true));
-            return Ok(allTournaments);
+            //return Ok(await _uow.TournamentRepository.GetAllAsync(true));
+            if (includeGames)
+            {
+                var allTournamentsWithGames =
+                    _mapper.Map<IEnumerable<TournamentWithGamesDto>>(
+                        await _uow.TournamentRepository.GetAllAsync(true));
+                return Ok(allTournamentsWithGames);
+            }
+            else
+            {
+                var allTournamentsWithGames =
+                  _mapper.Map<IEnumerable<TournamentDto>>(
+                      await _uow.TournamentRepository.GetAllAsync(false));
+                return Ok(allTournamentsWithGames);
+            }
         }
 
         [HttpGet("{id}")]
@@ -81,9 +93,9 @@ namespace Tournament.Api.Controllers
             if (!ModelState.IsValid) return UnprocessableEntity(ModelState);
 
             _mapper.Map(dto, tournamentToPatch);
-            await _uow.CompleteAsync(); 
+            await _uow.CompleteAsync();
 
-            return NoContent(); 
+            return NoContent();
         }
 
 
