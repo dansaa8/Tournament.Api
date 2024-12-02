@@ -84,8 +84,9 @@ namespace Tournament.Api.Controllers
             if (gameToPatch == null) return NotFound("Game not found"); // Om inget hittas med angivet id, return NotFound
 
             var dto = _mapper.Map<GameUpdateDto>(gameToPatch); // Mappa om fetchade game till GameUpdateDto (samma som patchdocument)
-            patchDocument.ApplyTo(dto, ModelState); // Kolla så att dto:n uppfyller dto-kraven/attributen; exempelvis [required] & [maxlength] för prop
+            patchDocument.ApplyTo(dto, ModelState); 
 
+            TryValidateModel(dto); // Kolla så att dto:n uppfyller dto-kraven/attributen; exempelvis [required] & [maxlength] för prop
             if (!ModelState.IsValid) return UnprocessableEntity(ModelState); // Returnerar felmeddelanden om kraven ej uppfylls.
 
             _mapper.Map(dto, gameToPatch); // Uppdaterar de förändrade/patchde fälten på den ursprungligt hämtade(och trackade) Game-entiten 
