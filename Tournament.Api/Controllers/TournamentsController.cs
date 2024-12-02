@@ -10,6 +10,7 @@ using Tournament.Core.Entities;
 using Tournament.Core.Repositories;
 using AutoMapper;
 using Tournament.Core.Dto;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace Tournament.Api.Controllers
 {
@@ -41,6 +42,17 @@ namespace Tournament.Api.Controllers
             return tournament == null ? NotFound() : Ok(tournament);
         }
 
+        [HttpPost]
+        public async Task<ActionResult<TournamentDetails>> PostTournament(TournamentCreateDto reqBody)
+        {
+            var newTournament = _mapper.Map<TournamentDetails>(reqBody);
+            _uow.TournamentRepository.Add(newTournament);
+            await _uow.CompleteAsync();
+
+            var dto = _mapper.Map<TournamentDto>(newTournament);
+            return CreatedAtAction(nameof(GetOneTournament), new { id = newTournament.Id }, dto);
+        }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTournament(int id, TournamentUpdateDto reqBody)
         {
@@ -54,16 +66,26 @@ namespace Tournament.Api.Controllers
             return Ok(_mapper.Map<TournamentDto>(tournament));
         }
 
-        [HttpPost]
-        public async Task<ActionResult<TournamentDetails>> PostTournament(TournamentCreateDto reqBody)
+        [HttpPatch("{tournamentId}")]
+        public async Task<ActionResult<TournamentDto>> PatchTournament(int tournamentId, JsonPatchDocument<TournamentUpdateDto> patchDocument)
         {
-            var newTournament = _mapper.Map<TournamentDetails>(reqBody);
-            _uow.TournamentRepository.Add(newTournament);
-            await _uow.CompleteAsync();
+            if (patchDocument is null) return BadRequest("No patch document");
 
-            var dto = _mapper.Map<TournamentDto>(newTournament);
-            return CreatedAtAction(nameof(GetOneTournament), new { id = newTournament.Id }, dto);
+            var tournamentToPatch = await _uow.TournamentRepository.GetAsync(tournamentId);
+            if (tournamentToPatch == null) return NotFound("Tournament not found");
+
+            var dto = _mapper.Map<TournamentUpdateDto>(tournamentToPatch);
+            patchDocument.ApplyTo(dto, ModelState);
+
+            TryValidateModel(dto);
+            if (!ModelState.IsValid) return UnprocessableEntity(ModelState);
+
+            _mapper.Map(dto, tournamentToPatch);
+            await _uow.CompleteAsync(); 
+
+            return NoContent(); 
         }
+
 
         // DELETE: api/TournamentDetails/5
         [HttpDelete("{id}")]
