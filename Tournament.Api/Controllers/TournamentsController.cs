@@ -40,10 +40,10 @@ namespace Tournament.Api.Controllers
             }
             else
             {
-                var allTournamentsWithGames =
+                var allTournaments =
                   _mapper.Map<IEnumerable<TournamentDto>>(
                       await _uow.TournamentRepository.GetAllAsync(false));
-                return Ok(allTournamentsWithGames);
+                return Ok(allTournaments);
             }
         }
 

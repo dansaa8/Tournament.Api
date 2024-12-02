@@ -28,10 +28,18 @@ namespace Tournament.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<GameDto>>> GetAllGames()
+        public async Task<ActionResult<IEnumerable<GameDto>>> GetAllGames(string? title = null)
         {
-            var allGames = _mapper.Map<IEnumerable<GameDto>>(await _uow.GameRepository.GetAllAsync());
-            return Ok(allGames);
+            if (string.IsNullOrWhiteSpace(title))
+            {
+                var allGames = _mapper.Map<IEnumerable<GameDto>>(await _uow.GameRepository.GetAllAsync());
+                return Ok(allGames);
+            }
+            else
+            {
+                var allGamesByTitle = _mapper.Map<IEnumerable<GameDto>>(await _uow.GameRepository.GetAllByTitleAsync(title));
+                return Ok(allGamesByTitle);
+            }
         }
 
         [HttpGet("{id}")]
@@ -42,7 +50,7 @@ namespace Tournament.Api.Controllers
             return game == null ? NotFound() : Ok(dto);
         }
 
-        
+
         [HttpPost]
         public async Task<ActionResult<Game>> PostGame(GameCreateDto reqBody)
         {
