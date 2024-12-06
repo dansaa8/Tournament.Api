@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Tournament.Api.Extensions;
-using Tournament.Core.Repositories;
+using Tournament.Core.Contracts;
 using Tournament.Data.Data;
 using Tournament.Data.Repositories;
+using Tournaments.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<TournamentApiContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("TournamentApiContext") ?? throw new InvalidOperationException("Connection string 'TournamentApiContext' not found.")));
@@ -17,6 +19,7 @@ builder.Services.AddControllers(opt => opt.ReturnHttpNotAcceptable = true)
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IServiceManager, ServiceManager>();
 builder.Services.AddAutoMapper(typeof(TournamentMappings));
 
 var app = builder.Build();

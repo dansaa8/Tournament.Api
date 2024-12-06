@@ -4,55 +4,54 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tournament.Core.Contracts;
 using Tournament.Core.Entities;
-using Tournament.Core.Repositories;
 using Tournament.Data.Data;
 
 namespace Tournament.Data.Repositories
 {
-    public class GameRepository : IGameRepository
+    public class GameRepository : RepositoryBase<Game>, IGameRepository
     {
-        private readonly TournamentApiContext _context;
-
-        public GameRepository(TournamentApiContext context)
+        public GameRepository(TournamentApiContext context) : base(context)
         {
-            _context = context;
         }
 
-        public async Task<bool> AnyAsync(int id)
+        public async Task<Game?> GetGameByIdAsync(int id, bool trackChanges = false)
         {
-            return await _context.Games.AnyAsync(game => game.Id == id);
+            return await FindByCondition(g => g.Id.Equals(id), trackChanges).FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<Game>> GetAllAsync()
+        public async Task<IEnumerable<Game>> GetGamesAsync(bool trackChanges = false)
         {
-            return await _context.Games.ToListAsync();
+            return await FindAll(trackChanges).ToListAsync();
         }
 
-        public async Task<IEnumerable<Game>> GetAllByTitleAsync(string title)
-        {
-            return await _context.Games
-                .Where(game => game.Title == title).ToListAsync();
-        }
+        // public async Task<IEnumerable<Game>> GetGamesByTitle(string title)
+        // {
+        //     return await _context.Games
+        //         .Where(game => game.Title == title).ToListAsync();
+        // }
 
-        public async Task<Game?> GetAsync(int id)
-        {
-            return await _context.Games.FindAsync(id);
-        }
-
-        public void Add(Game game)
-        {
-            _context.Games.Add(game);
-        }
-
-        public void Remove(Game game)
-        {
-            _context.Games.Remove(game);
-        }
-
-        public void Update(Game game)
-        {
-            _context.Games.Update(game);
-        }
+        //
+        //     public async Task<bool> AnyAsync(int id)
+        //     {
+        //         return await _context.Games.AnyAsync(game => game.Id == id);
+        //     }
+        //
+        //     public void Add(Game game)
+        //     {
+        //         _context.Games.Add(game);
+        //     }
+        //
+        //     public void Remove(Game game)
+        //     {
+        //         _context.Games.Remove(game);
+        //     }
+        //
+        //     public void Update(Game game)
+        //     {
+        //         _context.Games.Update(game);
+        //     }
+        // }
     }
 }
