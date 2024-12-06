@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Tournament.Core.Dto;
+using Tournament.Core.Dto.Queries;
 using Tournaments.Services;
 
 namespace Tournament.Presentation.Controllers
@@ -8,12 +9,12 @@ namespace Tournament.Presentation.Controllers
     [ApiController]
     public class TournamentsController(IServiceManager _serviceManager) : ControllerBase
     {
-
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TournamentDto>>> GetTournaments(bool includeGames)
+        public async Task<ActionResult<IEnumerable<TournamentDto>>> GetTournaments(
+            [FromQuery] TournamentQueryParams queryParams)
         {
             var tournamentDtos =
-                await _serviceManager.TournamentService.GetTournamentsAsync(includeGames);
+                await _serviceManager.TournamentService.GetTournamentsAsync(queryParams);
             return Ok(tournamentDtos);
         }
 

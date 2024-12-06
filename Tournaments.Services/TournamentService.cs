@@ -3,6 +3,7 @@ using AutoMapper;
 using Services.Contracts;
 using Tournament.Core.Contracts;
 using Tournament.Core.Dto;
+using Tournament.Core.Dto.Queries;
 using Tournament.Core.Entities;
 
 namespace Tournaments.Services;
@@ -21,12 +22,14 @@ public class TournamentService(IUnitOfWork uow, IMapper mapper) : ITournamentSer
         return mapper.Map<TournamentDto>(tournament);
     }
 
-    public async Task<IEnumerable<TournamentDto>> GetTournamentsAsync(bool includeGames, bool trackChanges = false)
+    public async Task<IEnumerable<TournamentDto>> GetTournamentsAsync(
+        TournamentQueryParams queryParams)
     {
-        return includeGames
+        var tournaments = await uow.TournamentRepository.GetTournamentsAsync(queryParams);
+        return queryParams.IncludeGames
             ? mapper.Map<IEnumerable<TournamentWithGamesDto>>(
-                await uow.TournamentRepository.GetTournamentsAsync(includeGames = true, trackChanges))
+                await uow.TournamentRepository.GetTournamentsAsync(queryParams))
             : mapper.Map<IEnumerable<TournamentDto>>(
-                await uow.TournamentRepository.GetTournamentsAsync(includeGames = false, trackChanges));
+                await uow.TournamentRepository.GetTournamentsAsync(queryParams));
     }
 }

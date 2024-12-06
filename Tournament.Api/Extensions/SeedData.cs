@@ -42,122 +42,33 @@ namespace Tournament.Api.Extensions
 
         private static List<TournamentDetails> GenerateTournaments()
         {
-            var tournaments = new List<TournamentDetails>
-    {
-        new TournamentDetails
-        {
-            Title = "Winter Championship 2024",
-            StartDate = new DateTime(2024, 1, 15),
-            Games = new List<Game>
+            var tournaments = new List<TournamentDetails>();
+            var random = new Random();
+
+            for (int i = 1; i <= 30; i++)
             {
-                new Game
+                // Generate a random number of games (0 to 5)
+                int gameCount = random.Next(0, 6);
+                var games = new List<Game>();
+
+                for (int j = 1; j <= gameCount; j++)
                 {
-                    Title = "Winter Championship Opening Match",
-                    Time = new DateTime(2024, 1, 15, 10, 0, 0)
-                },
-                new Game
-                {
-                    Title = "Winter Championship Semi-Final",
-                    Time = new DateTime(2024, 1, 18, 14, 30, 0)
+                    games.Add(new Game
+                    {
+                        Title = $"Game {j} of Tournament {i}",
+                        Time = DateTime.Now.AddDays(random.Next(0, 30)) // Random time within the next 30 days
+                    });
                 }
+
+                tournaments.Add(new TournamentDetails
+                {
+                    Title = $"Tournament {i}",
+                    StartDate = DateTime.Now.AddDays(random.Next(1, 365)), // Random start date within the next year
+                    Games = games
+                });
             }
-        },
-        new TournamentDetails
-        {
-            Title = "Spring Invitational 2024",
-            StartDate = new DateTime(2024, 4, 10),
-            Games = new List<Game>
-            {
-                new Game
-                {
-                    Title = "Spring Invitational Group Stage",
-                    Time = new DateTime(2024, 4, 10, 9, 0, 0)
-                },
-                new Game
-                {
-                    Title = "Spring Invitational Final Match",
-                    Time = new DateTime(2024, 4, 15, 17, 0, 0)
-                }
-            }
-        },
-        new TournamentDetails
-        {
-            Title = "Summer Clash 2024",
-            StartDate = new DateTime(2024, 7, 5),
-            Games = new List<Game>
-            {
-                new Game
-                {
-                    Title = "Summer Clash Opening Round",
-                    Time = new DateTime(2024, 7, 5, 12, 0, 0)
-                },
-                new Game
-                {
-                    Title = "Summer Clash Championship Match",
-                    Time = new DateTime(2024, 7, 10, 16, 0, 0)
-                }
-            }
-        }
-    };
 
             return tournaments;
         }
-
-
-        private static List<Game> GenerateGames(List<TournamentDetails> tournaments)
-        {
-            var games = new List<Game>();
-
-            // Use the actual Ids of the tournaments after they've been saved to the database
-            var tournament1 = tournaments[0]; // Winter Championship
-            var tournament2 = tournaments[1]; // Spring Invitational
-            var tournament3 = tournaments[2]; // Summer Clash
-
-            // Create games and assign the correct TournamentId from the saved tournaments
-            games.Add(new Game
-            {
-                Title = "Winter Championship Opening Match",
-                Time = new DateTime(2024, 1, 15, 10, 0, 0),
-                TournamentId = tournament1.Id // Correctly use the Id from the saved tournament
-            });
-
-            games.Add(new Game
-            {
-                Title = "Winter Championship Semi-Final",
-                Time = new DateTime(2024, 1, 18, 14, 30, 0),
-                TournamentId = tournament1.Id
-            });
-
-            games.Add(new Game
-            {
-                Title = "Spring Invitational Group Stage",
-                Time = new DateTime(2024, 4, 10, 9, 0, 0),
-                TournamentId = tournament2.Id
-            });
-
-            games.Add(new Game
-            {
-                Title = "Spring Invitational Final Match",
-                Time = new DateTime(2024, 4, 15, 17, 0, 0),
-                TournamentId = tournament2.Id
-            });
-
-            games.Add(new Game
-            {
-                Title = "Summer Clash Opening Round",
-                Time = new DateTime(2024, 7, 5, 12, 0, 0),
-                TournamentId = tournament3.Id
-            });
-
-            games.Add(new Game
-            {
-                Title = "Summer Clash Championship Match",
-                Time = new DateTime(2024, 7, 10, 16, 0, 0),
-                TournamentId = tournament3.Id
-            });
-
-            return games;
-        }
-
     }
 }

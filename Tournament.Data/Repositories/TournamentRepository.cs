@@ -5,29 +5,36 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tournament.Core.Contracts;
+using Tournament.Core.Dto.Queries;
 using Tournament.Core.Entities;
 using Tournament.Data.Data;
 
 namespace Tournament.Data.Repositories
 {
-    public class TournamentRepository : RepositoryBase<TournamentDetails>, ITournamentRepository
+    public class TournamentRepository(TournamentApiContext context)
+        : RepositoryBase<TournamentDetails>(context), ITournamentRepository
     {
-        public TournamentRepository(TournamentApiContext context) : base(context)
-        {
-        }
-
         public async Task<TournamentDetails?> GetTournamentByIdAsync(int id, bool trackChanges = false)
         {
             return await FindByCondition(t => t.Id == id, trackChanges).FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<TournamentDetails>> GetTournamentsAsync(bool includeGames,
+        public async Task<IEnumerable<TournamentDetails>> GetTournamentsAsync(
+            TournamentQueryParams queryParams,
             bool trackChanges = false)
         {
-            return includeGames
-                ? await FindAll(trackChanges)
-                    .Include(t => t.Games).ToListAsync()
-                : await FindAll(trackChanges).ToListAsync();
+            var query = FindAll(trackChanges);
+            if (queryParams.IncludeGames)
+                query = query.Include(t => t.Games);
+
+            // Om det t.ex finns 20 sidor och pageNumber har 2 och pageSize är 3.
+            // då blir pagesToSkip = 6...
+            uint pagesToSkip = (queryParams.PageNumber - 1) * queryParams.PageSize;
+
+            // Och vi plockar ut 7, 8, 9 från DB.
+            query = query.Skip((int)pagesToSkip).Take((int)queryParams.PageSize);
+
+            return await query.ToListAsync();
         }
 
 

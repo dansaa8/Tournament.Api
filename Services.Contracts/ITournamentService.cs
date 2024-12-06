@@ -1,9 +1,10 @@
 ﻿using Tournament.Core.Dto;
+using Tournament.Core.Dto.Queries;
 
 namespace Services.Contracts;
 
 public interface ITournamentService
 {
     Task<TournamentDto> GetTournamentByIdAsync(int id);
-    Task<IEnumerable<TournamentDto>> GetTournamentsAsync(bool includeGames, bool trackChanges = false);
+    Task<IEnumerable<TournamentDto>> GetTournamentsAsync(TournamentQueryParams queryParams);
 }
