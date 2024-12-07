@@ -8,7 +8,7 @@ public interface ITournamentRepository
     Task<TournamentDetails?> GetTournamentByIdAsync(int id, bool trackChanges = false);
 
     Task<IEnumerable<TournamentDetails>> GetTournamentsAsync(
-        TournamentQueryParams queryParams,
+        TournamentPagingQueryParams pagingQueryParams,
         bool trackChanges = false);
 
     Task<int> GetTournamentsCountAsync();

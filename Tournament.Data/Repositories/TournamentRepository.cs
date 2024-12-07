@@ -12,7 +12,7 @@ using Tournament.Data.Data;
 namespace Tournament.Data.Repositories
 {
     public class TournamentRepository(TournamentApiContext context)
-        : RepositoryBase<TournamentDetails>(context), ITournamentRepository
+        : RepositoryBase<TournamentDetails>(context), ITournamentRepository         
     {
         public async Task<TournamentDetails?> GetTournamentByIdAsync(int id, bool trackChanges = false)
         {
@@ -20,19 +20,19 @@ namespace Tournament.Data.Repositories
         }
 
         public async Task<IEnumerable<TournamentDetails>> GetTournamentsAsync(
-            TournamentQueryParams queryParams,
+            TournamentPagingQueryParams pagingQueryParams,
             bool trackChanges = false)
         {
             var query = FindAll(trackChanges);
-            if (queryParams.IncludeGames)
+            if (pagingQueryParams.IncludeGames)
                 query = query.Include(t => t.Games);
 
             // Om det t.ex finns 20 sidor och pageNumber har 2 och pageSize är 3.
             // då blir pagesToSkip = 6...
-            uint pagesToSkip = (queryParams.PageNumber - 1) * queryParams.PageSize;
+            uint pagesToSkip = (pagingQueryParams.PageNumber - 1) * pagingQueryParams.PageSize;
 
             // Och vi plockar ut 7, 8, 9 från DB.
-            query = query.Skip((int)pagesToSkip).Take((int)queryParams.PageSize);
+            query = query.Skip((int)pagesToSkip).Take((int)pagingQueryParams.PageSize);
 
             return await query.ToListAsync();
         }

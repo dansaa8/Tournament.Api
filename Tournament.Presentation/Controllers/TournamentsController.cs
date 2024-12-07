@@ -11,10 +11,9 @@ namespace Tournament.Presentation.Controllers
     {
         [HttpGet]
         public async Task<ActionResult<PagedResult<TournamentDto>>> GetTournaments(
-            [FromQuery] TournamentQueryParams queryParams)
+            [FromQuery] TournamentPagingQueryParams pagingQueryParams)
         {
-            var pagedResult =
-                await _serviceManager.TournamentService.GetTournamentsAsync(queryParams);
+            var pagedResult = await _serviceManager.TournamentService.GetTournamentsAsync(pagingQueryParams);
             return Ok(pagedResult);
         }
 

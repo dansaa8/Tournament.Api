@@ -2,6 +2,7 @@
 using Services.Contracts;
 using Tournament.Core.Contracts;
 using Tournament.Core.Dto;
+using Tournament.Core.Dto.Queries;
 using Tournament.Core.Entities;
 
 namespace Tournaments.Services;
@@ -29,8 +30,16 @@ public class GameService : IGameService
         return _mapper.Map<GameDto>(game);
     }
 
-    public async Task<IEnumerable<GameDto>> GetGamesAsync(bool trackChanges = false)
+    public async Task<PagedResult<GameDto>> GetGamesAsync(PagingQueryParams queryParams)
     {
-        return _mapper.Map<IEnumerable<GameDto>>(await _uow.GameRepository.GetGamesAsync(trackChanges));
+        var games = await _uow.GameRepository.GetGamesAsync(queryParams);
+
+        return new PagedResult<GameDto>()
+        {
+            Data = _mapper.Map<List<GameDto>>(games),
+            TotalItems = await _uow.GameRepository.CountGamesAsync(),
+            PageNumber = (int)queryParams.PageNumber,
+            PageSize = (int)queryParams.PageSize
+        };
     }
 }

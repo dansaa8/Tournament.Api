@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Tournament.Core.Contracts;
 using Tournament.Core.Dto;
+using Tournament.Core.Dto.Queries;
 using Tournament.Core.Entities;
 using Tournaments.Services;
 
@@ -12,12 +13,13 @@ namespace Tournament.Presentation.Controllers
     [ApiController]
     public class GamesController(IServiceManager _serviceManager) : ControllerBase
     {
-
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<GameDto>>> GetAllGames(string? title = null)
+        public async Task<ActionResult<PagedResult<GameDto>>> GetAllGames(
+            [FromQuery] PagingQueryParams pagingQueryParams)
         {
             // ToDo: Skicka med sök condition om title-queryparam är medskickad?
-            return Ok(await _serviceManager.GameService.GetGamesAsync());
+            var pagedResult = await _serviceManager.GameService.GetGamesAsync(pagingQueryParams);
+            return Ok(pagedResult);
         }
 
         [HttpGet("{id}")]

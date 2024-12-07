@@ -23,18 +23,18 @@ public class TournamentService(IUnitOfWork _uow, IMapper _mapper) : ITournamentS
     }
 
     public async Task<PagedResult<TournamentDto>> GetTournamentsAsync(
-        TournamentQueryParams queryParams)
+        TournamentPagingQueryParams pagingQueryParams)
     {
-        var tournaments = await _uow.TournamentRepository.GetTournamentsAsync(queryParams);
+        var tournaments = await _uow.TournamentRepository.GetTournamentsAsync(pagingQueryParams);
 
         return new PagedResult<TournamentDto>
         {
-            Data = queryParams.IncludeGames
+            Data = pagingQueryParams.IncludeGames
                 ? _mapper.Map<IEnumerable<TournamentWithGamesDto>>(tournaments)
                 : _mapper.Map<IEnumerable<TournamentDto>>(tournaments),
             TotalItems = await _uow.TournamentRepository.GetTournamentsCountAsync(),
-            PageNumber = (int)queryParams.PageNumber,
-            PageSize = (int)queryParams.PageSize
+            PageNumber = (int)pagingQueryParams.PageNumber,
+            PageSize = (int)pagingQueryParams.PageSize
         };
     }
 }

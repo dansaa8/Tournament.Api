@@ -1,9 +1,8 @@
 ﻿namespace Tournament.Core.Dto.Queries;
 
-public class TournamentQueryParams
+public class PagingQueryParams
 {
-    public bool IncludeGames { get; set; } = false;
-
+    
     private uint _pageSize = 20;
     public uint PageSize
     {
