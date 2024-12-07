@@ -37,6 +37,8 @@ namespace Tournament.Data.Repositories
             return await query.ToListAsync();
         }
 
+        public async Task<int> GetTournamentsCountAsync() => await FindAll().CountAsync();
+
 
         // public async Task<bool> AnyAsync(int id)
         // {

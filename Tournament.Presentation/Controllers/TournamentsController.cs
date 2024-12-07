@@ -10,12 +10,12 @@ namespace Tournament.Presentation.Controllers
     public class TournamentsController(IServiceManager _serviceManager) : ControllerBase
     {
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TournamentDto>>> GetTournaments(
+        public async Task<ActionResult<PagedResult<TournamentDto>>> GetTournaments(
             [FromQuery] TournamentQueryParams queryParams)
         {
-            var tournamentDtos =
+            var pagedResult =
                 await _serviceManager.TournamentService.GetTournamentsAsync(queryParams);
-            return Ok(tournamentDtos);
+            return Ok(pagedResult);
         }
 
         [HttpGet("{id}")]

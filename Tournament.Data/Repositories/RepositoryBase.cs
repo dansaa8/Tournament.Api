@@ -26,7 +26,9 @@ public class RepositoryBase<T> : IRepositoryBase<T> where T : class
         trackChanges ? 
             DbSet.Where(expression) : 
             DbSet.Where(expression).AsNoTracking();
-
+    
+    public int Count => DbSet.Count();
+    
     public void Create(T entity) => DbSet.Add(entity);
     public void Delete(T entity) => DbSet.Remove(entity);
     public void Update(T entity) => DbSet.Update(entity);
