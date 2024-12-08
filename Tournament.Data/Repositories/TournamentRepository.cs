@@ -20,19 +20,19 @@ namespace Tournament.Data.Repositories
         }
 
         public async Task<IEnumerable<TournamentDetails>> GetTournamentsAsync(
-            TournamentPagingQueryParams pagingQueryParams,
+            TournamentQueryParameters queryParameters,
             bool trackChanges = false)
         {
             var query = FindAll(trackChanges);
-            if (pagingQueryParams.IncludeGames)
+            if (queryParameters.IncludeGames)
                 query = query.Include(t => t.Games);
 
             // Om det t.ex finns 20 sidor och pageNumber har 2 och pageSize är 3.
             // då blir pagesToSkip = 6...
-            uint pagesToSkip = (pagingQueryParams.PageNumber - 1) * pagingQueryParams.PageSize;
+            uint pagesToSkip = (queryParameters.PageNumber - 1) * queryParameters.PageSize;
 
             // Och vi plockar ut 7, 8, 9 från DB.
-            query = query.Skip((int)pagesToSkip).Take((int)pagingQueryParams.PageSize);
+            query = query.Skip((int)pagesToSkip).Take((int)queryParameters.PageSize);
 
             return await query.ToListAsync();
         }

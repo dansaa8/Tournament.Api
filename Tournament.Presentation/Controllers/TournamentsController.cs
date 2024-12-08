@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Services.Contracts;
 using Tournament.Core.Dto;
 using Tournament.Core.Dto.Queries;
-using Tournaments.Services;
 
 namespace Tournament.Presentation.Controllers
 {
@@ -11,10 +11,11 @@ namespace Tournament.Presentation.Controllers
     {
         [HttpGet]
         public async Task<ActionResult<PagedResult<TournamentDto>>> GetTournaments(
-            [FromQuery] TournamentPagingQueryParams pagingQueryParams)
+            [FromQuery] TournamentQueryParameters queryParams)
         {
-            var pagedResult = await _serviceManager.TournamentService.GetTournamentsAsync(pagingQueryParams);
-            return Ok(pagedResult);
+            var tournamentsWithMetaData = 
+                await _serviceManager.TournamentService.GetTournamentsAsync(queryParams);
+            return Ok(tournamentsWithMetaData);
         }
 
         [HttpGet("{id}")]

@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Services.Contracts;
 using Tournament.Core.Contracts;
 using Tournament.Core.Dto;
 using Tournament.Core.Dto.Queries;
 using Tournament.Core.Entities;
-using Tournaments.Services;
 
 namespace Tournament.Presentation.Controllers
 {
@@ -15,11 +15,12 @@ namespace Tournament.Presentation.Controllers
     {
         [HttpGet]
         public async Task<ActionResult<PagedResult<GameDto>>> GetAllGames(
-            [FromQuery] PagingQueryParams pagingQueryParams)
+            [FromQuery] GameQueryParameters queryParams)
         {
             // ToDo: Skicka med sök condition om title-queryparam är medskickad?
-            var pagedResult = await _serviceManager.GameService.GetGamesAsync(pagingQueryParams);
-            return Ok(pagedResult);
+            var gamesWithMetaData =
+                await _serviceManager.GameService.GetGamesAsync(queryParams);
+            return Ok(gamesWithMetaData);
         }
 
         [HttpGet("{id}")]

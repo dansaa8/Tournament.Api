@@ -6,5 +6,5 @@ namespace Services.Contracts;
 public interface IGameService
 {
     Task<GameDto> GetGameByIdAsync(int id);
-    Task<PagedResult<GameDto>> GetGamesAsync(PagingQueryParams queryParams);
+    Task<PagedResult<GameDto>> GetGamesAsync(GameQueryParameters queryParams);
 }

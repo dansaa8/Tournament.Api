@@ -23,13 +23,13 @@ namespace Tournament.Data.Repositories
         }
 
         public async Task<IEnumerable<Game>> GetGamesAsync(
-            PagingQueryParams pagingQueryParams,
+            GameQueryParameters queryParams,
             bool trackChanges = false)
         {
             var query = FindAll(trackChanges);
-            uint pagesToSkip = (pagingQueryParams.PageNumber - 1) * pagingQueryParams.PageSize;
+            uint pagesToSkip = (queryParams.PageNumber - 1) * queryParams.PageSize;
             
-            query = query.Skip((int)pagesToSkip).Take((int)pagingQueryParams.PageSize);
+            query = query.Skip((int)pagesToSkip).Take((int)queryParams.PageSize);
             
             return await query.ToListAsync();
         }

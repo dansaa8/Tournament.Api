@@ -1,6 +1,4 @@
-﻿using Services.Contracts;
-
-namespace Tournaments.Services;
+﻿namespace Services.Contracts;
 
 public interface IServiceManager
 {

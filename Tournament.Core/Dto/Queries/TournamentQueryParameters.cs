@@ -1,7 +1,6 @@
 ﻿namespace Tournament.Core.Dto.Queries;
 
-public class TournamentPagingQueryParams : PagingQueryParams
+public class TournamentQueryParameters : PagingQueryParams
 {
     public bool IncludeGames { get; set; } = false;
-
 }

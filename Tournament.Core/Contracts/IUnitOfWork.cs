@@ -1,6 +1,4 @@
-﻿using Tournament.Data.Repositories;
-
-namespace Tournament.Core.Contracts
+﻿namespace Tournament.Core.Contracts
 {
     public interface IUnitOfWork
     {

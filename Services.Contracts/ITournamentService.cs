@@ -6,5 +6,5 @@ namespace Services.Contracts;
 public interface ITournamentService
 {
     Task<TournamentDto> GetTournamentByIdAsync(int id);
-    Task<PagedResult<TournamentDto>> GetTournamentsAsync(TournamentPagingQueryParams pagingQueryParams);
+    Task<PagedResult<TournamentDto>> GetTournamentsAsync(TournamentQueryParameters queryParameters);
 }

@@ -30,7 +30,7 @@ public class GameService : IGameService
         return _mapper.Map<GameDto>(game);
     }
 
-    public async Task<PagedResult<GameDto>> GetGamesAsync(PagingQueryParams queryParams)
+    public async Task<PagedResult<GameDto>> GetGamesAsync(GameQueryParameters queryParams)
     {
         var games = await _uow.GameRepository.GetGamesAsync(queryParams);
 

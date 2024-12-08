@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Services.Contracts;
 using Tournament.Api.Extensions;
 using Tournament.Core.Contracts;
 using Tournament.Data.Data;
