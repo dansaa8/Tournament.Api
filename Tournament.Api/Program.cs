@@ -5,6 +5,7 @@ using Tournament.Api.Extensions;
 using Tournament.Core.Contracts;
 using Tournament.Data.Data;
 using Tournament.Data.Repositories;
+using Tournament.Presentation.Filters;
 using Tournaments.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,7 +14,11 @@ builder.Services.AddDbContext<TournamentApiContext>(options =>
 
 // Add services to the container.
 
-builder.Services.AddControllers(opt => opt.ReturnHttpNotAcceptable = true)
+builder.Services.AddControllers(opt =>
+    {
+        opt.Filters.Add<ApiExceptionFilter>();
+        opt.ReturnHttpNotAcceptable = true;
+    })
     .AddNewtonsoftJson()
     .AddXmlDataContractSerializerFormatters();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

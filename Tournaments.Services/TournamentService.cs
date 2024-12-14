@@ -5,6 +5,7 @@ using Tournament.Core.Contracts;
 using Tournament.Core.Dto;
 using Tournament.Core.Dto.Queries;
 using Tournament.Core.Entities;
+using Tournament.Core.Exceptions;
 
 namespace Tournaments.Services;
 
@@ -16,7 +17,7 @@ public class TournamentService(IUnitOfWork _uow, IMapper _mapper) : ITournamentS
 
         if (tournament == null)
         {
-            // ToDo: Fix later
+            throw new NotFoundException($"Tournament with id {id} was not found.");
         }
 
         return _mapper.Map<TournamentDto>(tournament);
