@@ -4,6 +4,7 @@ using Tournament.Core.Contracts;
 using Tournament.Core.Dto;
 using Tournament.Core.Dto.Queries;
 using Tournament.Core.Entities;
+using Tournament.Core.Exceptions;
 
 namespace Tournaments.Services;
 
@@ -24,7 +25,8 @@ public class GameService : IGameService
 
         if (game == null)
         {
-            // ToDo: Fix later
+            throw new NotFoundException($"Game with id {id} was not found.");
+
         }
 
         return _mapper.Map<GameDto>(game);
