@@ -6,6 +6,7 @@ using Tournament.Core.Dto;
 using Tournament.Core.Dto.Queries;
 using Tournament.Core.Entities;
 using Tournament.Core.Exceptions;
+using Tournament.Core.Req;
 
 namespace Tournaments.Services;
 
@@ -23,19 +24,14 @@ public class TournamentService(IUnitOfWork _uow, IMapper _mapper) : ITournamentS
         return _mapper.Map<TournamentDto>(tournament);
     }
 
-    public async Task<PagedResult<TournamentDto>> GetTournamentsAsync(
-        TournamentQueryParameters queryParameters)
+    public async Task<(IEnumerable<TournamentDto> tournamentDtos, MetaData metadata)> GetTournamentsAsync(
+        TournamentQueryParameters queryParams)
     {
-        var tournaments = await _uow.TournamentRepository.GetTournamentsAsync(queryParameters);
-
-        return new PagedResult<TournamentDto>
-        {
-            Data = queryParameters.IncludeGames
-                ? _mapper.Map<IEnumerable<TournamentWithGamesDto>>(tournaments)
-                : _mapper.Map<IEnumerable<TournamentDto>>(tournaments),
-            TotalItems = await _uow.TournamentRepository.GetTournamentsCountAsync(),
-            PageNumber = (int)queryParameters.PageNumber,
-            PageSize = (int)queryParameters.PageSize
-        };
+        var pagedList = await _uow.TournamentRepository.GetTournamentsAsync(queryParams);
+        
+        var tournamentDtos = queryParams.IncludeGames
+            ? _mapper.Map<IEnumerable<TournamentWithGamesDto>>(pagedList.Items)
+            : _mapper.Map<IEnumerable<TournamentDto>>(pagedList.Items);
+        return (tournamentDtos, pagedList.MetaData);
     }
 }

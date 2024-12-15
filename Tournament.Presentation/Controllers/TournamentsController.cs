@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
 using Services.Contracts;
 using Tournament.Core.Dto;
 using Tournament.Core.Dto.Queries;
+using Microsoft.AspNetCore.Http;
 
 namespace Tournament.Presentation.Controllers
 {
@@ -10,12 +12,14 @@ namespace Tournament.Presentation.Controllers
     public class TournamentsController(IServiceManager _serviceManager) : ControllerBase
     {
         [HttpGet]
-        public async Task<ActionResult<PagedResult<TournamentDto>>> GetTournaments(
+        public async Task<ActionResult<IEnumerable<TournamentDto>>> GetTournaments(
             [FromQuery] TournamentQueryParameters queryParams)
         {
-            var tournamentsWithMetaData = 
+            var pagedResult =
                 await _serviceManager.TournamentService.GetTournamentsAsync(queryParams);
-            return Ok(tournamentsWithMetaData);
+            
+            Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(pagedResult.metadata));
+            return Ok(pagedResult.tournamentDtos);
         }
 
         [HttpGet("{id}")]

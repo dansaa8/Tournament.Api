@@ -5,6 +5,7 @@ using Tournament.Core.Dto;
 using Tournament.Core.Dto.Queries;
 using Tournament.Core.Entities;
 using Tournament.Core.Exceptions;
+using Tournament.Core.Req;
 
 namespace Tournaments.Services;
 
@@ -26,22 +27,16 @@ public class GameService : IGameService
         if (game == null)
         {
             throw new NotFoundException($"Game with id {id} was not found.");
-
         }
 
         return _mapper.Map<GameDto>(game);
     }
 
-    public async Task<PagedResult<GameDto>> GetGamesAsync(GameQueryParameters queryParams)
+    public async Task<(IEnumerable<GameDto> gameDtos, MetaData metadata)> GetGamesAsync(
+        GameQueryParameters queryParams)
     {
-        var games = await _uow.GameRepository.GetGamesAsync(queryParams);
-
-        return new PagedResult<GameDto>()
-        {
-            Data = _mapper.Map<List<GameDto>>(games),
-            TotalItems = await _uow.GameRepository.CountGamesAsync(),
-            PageNumber = (int)queryParams.PageNumber,
-            PageSize = (int)queryParams.PageSize
-        };
+        var pagedList = await _uow.GameRepository.GetGamesAsync(queryParams);
+        var gameDtos = _mapper.Map<IEnumerable<GameDto>>(pagedList.Items);
+        return (gameDtos, pagedList.MetaData); 
     }
 }

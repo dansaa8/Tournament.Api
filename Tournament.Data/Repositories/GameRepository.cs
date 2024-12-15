@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Tournament.Core.Contracts;
 using Tournament.Core.Dto.Queries;
 using Tournament.Core.Entities;
+using Tournament.Core.Req;
 using Tournament.Data.Data;
 
 namespace Tournament.Data.Repositories
@@ -22,16 +23,13 @@ namespace Tournament.Data.Repositories
             return await FindByCondition(g => g.Id.Equals(id), trackChanges).FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<Game>> GetGamesAsync(
+        public async Task<PagedList<Game>> GetGamesAsync(
             GameQueryParameters queryParams,
             bool trackChanges = false)
         {
-            var query = FindAll(trackChanges);
-            uint pagesToSkip = (queryParams.PageNumber - 1) * queryParams.PageSize;
+            var games = FindAll(trackChanges);
             
-            query = query.Skip((int)pagesToSkip).Take((int)queryParams.PageSize);
-            
-            return await query.ToListAsync();
+            return await PagedList<Game>.CreateAsync(games, queryParams.PageNumber, queryParams.PageSize);
         }
         
         public async Task<int> CountGamesAsync() => await FindAll().CountAsync();

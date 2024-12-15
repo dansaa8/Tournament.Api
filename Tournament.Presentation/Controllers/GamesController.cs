@@ -1,10 +1,12 @@
-﻿using AutoMapper;
+﻿using System.Text.Json;
+using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Services.Contracts;
 using Tournament.Core.Contracts;
 using Tournament.Core.Dto;
 using Tournament.Core.Dto.Queries;
+using Microsoft.AspNetCore.Http;
 using Tournament.Core.Entities;
 
 namespace Tournament.Presentation.Controllers
@@ -14,13 +16,14 @@ namespace Tournament.Presentation.Controllers
     public class GamesController(IServiceManager _serviceManager) : ControllerBase
     {
         [HttpGet]
-        public async Task<ActionResult<PagedResult<GameDto>>> GetAllGames(
+        public async Task<ActionResult<IEnumerable<GameDto>>> GetAllGames(
             [FromQuery] GameQueryParameters queryParams)
         {
-            // ToDo: Skicka med sök condition om title-queryparam är medskickad?
-            var gamesWithMetaData =
+            var pagedResult =
                 await _serviceManager.GameService.GetGamesAsync(queryParams);
-            return Ok(gamesWithMetaData);
+            
+            Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(pagedResult.metadata));
+            return Ok(pagedResult.gameDtos);
         }
 
         [HttpGet("{id}")]

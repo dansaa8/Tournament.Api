@@ -1,10 +1,13 @@
 ﻿using Tournament.Core.Dto;
 using Tournament.Core.Dto.Queries;
+using Tournament.Core.Req;
 
 namespace Services.Contracts;
 
 public interface ITournamentService
 {
     Task<TournamentDto> GetTournamentByIdAsync(int id);
-    Task<PagedResult<TournamentDto>> GetTournamentsAsync(TournamentQueryParameters queryParameters);
+
+    Task<(IEnumerable<TournamentDto> tournamentDtos, MetaData metadata)> GetTournamentsAsync(
+        TournamentQueryParameters queryParams);
 }
