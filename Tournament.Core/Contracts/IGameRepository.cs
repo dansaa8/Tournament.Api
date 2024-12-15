@@ -6,6 +6,9 @@ namespace Tournament.Core.Contracts
 {
     public interface IGameRepository
     {
+        void Update(Game game);
+        void Create(Game game);
+        void Delete(Game game); 
         Task<PagedList<Game>> GetGamesAsync(GameQueryParameters queryParams, bool trackChanges = false);
 
         // Task<IEnumerable<Game>> GetGamesByTitle(string title);

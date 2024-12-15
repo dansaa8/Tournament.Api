@@ -8,6 +8,5 @@ namespace Tournament.Core.Dto
 {
     public record GameCreateDto : GameRequestDto
     {
-        public int TournamentId { get; set; }
     }
 }

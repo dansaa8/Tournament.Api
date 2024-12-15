@@ -11,6 +11,6 @@ public class Game
     public int TournamentId { get; set; } // fk to TournamentDetails
 
     [ForeignKey("TournamentId")] // nav prop
-    public TournamentDetails Details { get; set; } = new TournamentDetails();
+    public TournamentDetails? Details { get; set; }
 
 }

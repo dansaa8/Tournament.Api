@@ -13,6 +13,7 @@ public class GameService : IGameService
 {
     private IUnitOfWork _uow;
     private readonly IMapper _mapper;
+    private const int MAX_GAMES_PER_TOURNAMENT = 10;
 
     public GameService(IUnitOfWork uow, IMapper mapper)
     {
@@ -37,6 +38,30 @@ public class GameService : IGameService
     {
         var pagedList = await _uow.GameRepository.GetGamesAsync(queryParams);
         var gameDtos = _mapper.Map<IEnumerable<GameDto>>(pagedList.Items);
-        return (gameDtos, pagedList.MetaData); 
+        return (gameDtos, pagedList.MetaData);
+    }
+
+    public async Task<GameDto> CreateGameAsync(GameCreateDto gameCreateDto, int tournamentId)
+    {
+        var tournament = await _uow.TournamentRepository.GetTournamentByIdAsync(
+            tournamentId, includeGames: true);
+
+        if (tournament == null)
+        {
+            throw new NotFoundException($"Tournament with id {tournamentId} was not found.");
+        }
+
+        if (tournament.Games.Count >= MAX_GAMES_PER_TOURNAMENT)
+        {
+            throw new InvalidOperationException(
+                $"Tournament with id {tournamentId} cannot have more than {MAX_GAMES_PER_TOURNAMENT} games.");
+        }
+
+        var newGameEntity = _mapper.Map<Game>(gameCreateDto);
+        newGameEntity.TournamentId = tournamentId;
+        _uow.GameRepository.Create(newGameEntity);
+        
+        await _uow.CompleteAsync();
+        return _mapper.Map<GameDto>(newGameEntity);
     }
 }

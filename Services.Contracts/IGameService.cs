@@ -10,4 +10,6 @@ public interface IGameService
 
     Task<(IEnumerable<GameDto> gameDtos, MetaData metadata)> GetGamesAsync(
         GameQueryParameters queryParams);
+
+    Task<GameDto> CreateGameAsync(GameCreateDto gameCreateDto, int tournamentId);
 }

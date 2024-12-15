@@ -6,7 +6,8 @@ namespace Tournament.Core.Contracts;
 
 public interface ITournamentRepository
 {
-    Task<TournamentDetails?> GetTournamentByIdAsync(int id, bool trackChanges = false);
+    Task<TournamentDetails?> GetTournamentByIdAsync(
+        int id, bool includeGames = false, bool trackChanges = false);
 
     Task<PagedList<TournamentDetails>> GetTournamentsAsync(
         TournamentQueryParameters queryParameters,

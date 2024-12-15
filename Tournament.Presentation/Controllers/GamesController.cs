@@ -11,39 +11,38 @@ using Tournament.Core.Entities;
 
 namespace Tournament.Presentation.Controllers
 {
-    [Route("api/games")]
+    // [Route("api/games")]
     [ApiController]
     public class GamesController(IServiceManager _serviceManager) : ControllerBase
     {
+        
+        [Route("api/games")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GameDto>>> GetAllGames(
             [FromQuery] GameQueryParameters queryParams)
         {
             var pagedResult =
                 await _serviceManager.GameService.GetGamesAsync(queryParams);
-            
+
             Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(pagedResult.metadata));
             return Ok(pagedResult.gameDtos);
         }
 
+        [Route("api/games")]
         [HttpGet("{id}")]
         public async Task<ActionResult<GameDto>> GetOneGame(int id)
         {
             var gameDto = await _serviceManager.GameService.GetGameByIdAsync(id);
             return Ok(gameDto);
         }
-        //
-        //
-        // [HttpPost]
-        // public async Task<ActionResult<Game>> PostGame(GameCreateDto reqBody)
-        // {
-        //     var newGame = _mapper.Map<Game>(reqBody);
-        //     _uow.GameRepository.Add(newGame);
-        //     await _uow.CompleteAsync();
-        //
-        //     var dto = _mapper.Map<GameDto>(newGame);
-        //     return CreatedAtAction(nameof(GetOneGame), new { id = newGame.Id }, dto);
-        // }
+
+        [Route("api/tournament/{tournamentId}/games")]
+        [HttpPost]
+        public async Task<ActionResult<Game>> PostGame(int tournamentId, GameCreateDto reqBody)
+        {
+            var createdGameDto = await _serviceManager.GameService.CreateGameAsync(reqBody, tournamentId);
+            return CreatedAtAction(nameof(GetOneGame), new { id = tournamentId }, createdGameDto);
+        }
         //
         // [HttpPut("{id}")]
         // public async Task<IActionResult> PutGame(int id, GameUpdateDto reqBody)

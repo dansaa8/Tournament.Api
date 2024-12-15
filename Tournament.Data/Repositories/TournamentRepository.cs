@@ -15,9 +15,17 @@ namespace Tournament.Data.Repositories
     public class TournamentRepository(TournamentApiContext context)
         : RepositoryBase<TournamentDetails>(context), ITournamentRepository
     {
-        public async Task<TournamentDetails?> GetTournamentByIdAsync(int id, bool trackChanges = false)
+        public async Task<TournamentDetails?> GetTournamentByIdAsync(
+            int id, bool includeGames = false, bool trackChanges = false)
         {
-            return await FindByCondition(t => t.Id == id, trackChanges).FirstOrDefaultAsync();
+            IQueryable<TournamentDetails> query = FindByCondition(t => t.Id == id, trackChanges);
+
+            if (includeGames)
+            {
+                query = query.Include(t => t.Games);
+            }
+            
+            return await query.FirstOrDefaultAsync();
         }
 
         public async Task<PagedList<TournamentDetails>> GetTournamentsAsync(
