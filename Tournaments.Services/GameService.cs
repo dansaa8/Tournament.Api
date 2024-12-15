@@ -6,6 +6,7 @@ using Tournament.Core.Dto.Queries;
 using Tournament.Core.Entities;
 using Tournament.Core.Exceptions;
 using Tournament.Core.Req;
+using Tournament.Presentation.Filters;
 
 namespace Tournaments.Services;
 
@@ -53,14 +54,15 @@ public class GameService : IGameService
 
         if (tournament.Games.Count >= MAX_GAMES_PER_TOURNAMENT)
         {
-            throw new InvalidOperationException(
-                $"Tournament with id {tournamentId} cannot have more than {MAX_GAMES_PER_TOURNAMENT} games.");
+            throw new TournamentMaxGamesViolationException(
+                $"Tournament with id {tournamentId} already has" +
+                $" {tournament.Games.Count} of {MAX_GAMES_PER_TOURNAMENT} games.");
         }
 
         var newGameEntity = _mapper.Map<Game>(gameCreateDto);
         newGameEntity.TournamentId = tournamentId;
         _uow.GameRepository.Create(newGameEntity);
-        
+
         await _uow.CompleteAsync();
         return _mapper.Map<GameDto>(newGameEntity);
     }

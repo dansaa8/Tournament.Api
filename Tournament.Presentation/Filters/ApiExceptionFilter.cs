@@ -21,10 +21,20 @@ public class ApiExceptionFilter : ExceptionFilterAttribute
             {
                 StatusCode = StatusCodes.Status404NotFound
             };
-            
+
             // Tells ASP.NET Core that the exception has been handled and no further processing of that
             // exception should occur.
             context.ExceptionHandled = true;
+        }
+        else if (context.Exception is TournamentMaxGamesViolationException exception)
+        {
+            context.Result = new ObjectResult(new ProblemDetails()
+            {
+                Title = "Tournament Max Games Violation",
+                Detail = exception.Message,
+                Status = StatusCodes.Status400BadRequest,
+                Instance = context.HttpContext.Request.Path
+            });
         }
     }
 }
