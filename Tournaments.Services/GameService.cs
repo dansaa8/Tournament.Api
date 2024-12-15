@@ -42,28 +42,28 @@ public class GameService : IGameService
         return (gameDtos, pagedList.MetaData);
     }
 
-    public async Task<GameDto> CreateGameAsync(GameCreateDto gameCreateDto, int tournamentId)
-    {
-        var tournament = await _uow.TournamentRepository.GetTournamentByIdAsync(
-            tournamentId, includeGames: true);
-
-        if (tournament == null)
+        public async Task<GameDto> CreateGameAsync(GameCreateDto gameCreateDto, int tournamentId)
         {
-            throw new NotFoundException($"Tournament with id {tournamentId} was not found.");
+            var tournament = await _uow.TournamentRepository.GetTournamentByIdAsync(
+                tournamentId, includeGames: true);
+
+            if (tournament == null)
+            {
+                throw new NotFoundException($"Tournament with id {tournamentId} was not found.");
+            }
+
+            if (tournament.Games.Count >= MAX_GAMES_PER_TOURNAMENT)
+            {
+                throw new TournamentMaxGamesViolationException(
+                    $"Tournament with id {tournamentId} already has" +
+                    $" {tournament.Games.Count} of {MAX_GAMES_PER_TOURNAMENT} games.");
+            }
+
+            var newGameEntity = _mapper.Map<Game>(gameCreateDto);
+            newGameEntity.TournamentId = tournamentId;
+            _uow.GameRepository.Create(newGameEntity);
+
+            await _uow.CompleteAsync();
+            return _mapper.Map<GameDto>(newGameEntity);
         }
-
-        if (tournament.Games.Count >= MAX_GAMES_PER_TOURNAMENT)
-        {
-            throw new TournamentMaxGamesViolationException(
-                $"Tournament with id {tournamentId} already has" +
-                $" {tournament.Games.Count} of {MAX_GAMES_PER_TOURNAMENT} games.");
-        }
-
-        var newGameEntity = _mapper.Map<Game>(gameCreateDto);
-        newGameEntity.TournamentId = tournamentId;
-        _uow.GameRepository.Create(newGameEntity);
-
-        await _uow.CompleteAsync();
-        return _mapper.Map<GameDto>(newGameEntity);
-    }
 }

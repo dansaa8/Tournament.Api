@@ -15,9 +15,7 @@ namespace Tournament.Presentation.Controllers
     [ApiController]
     public class GamesController(IServiceManager _serviceManager) : ControllerBase
     {
-        
-        [Route("api/games")]
-        [HttpGet]
+        [HttpGet("api/games")]
         public async Task<ActionResult<IEnumerable<GameDto>>> GetAllGames(
             [FromQuery] GameQueryParameters queryParams)
         {
@@ -28,16 +26,14 @@ namespace Tournament.Presentation.Controllers
             return Ok(pagedResult.gameDtos);
         }
 
-        [Route("api/games")]
-        [HttpGet("{id}")]
+        [HttpGet("api/games/{id}")]
         public async Task<ActionResult<GameDto>> GetOneGame(int id)
         {
             var gameDto = await _serviceManager.GameService.GetGameByIdAsync(id);
             return Ok(gameDto);
         }
 
-        [Route("api/tournament/{tournamentId}/games")]
-        [HttpPost]
+        [HttpPost("api/tournament/{tournamentId}/games")]
         public async Task<ActionResult<Game>> PostGame(int tournamentId, GameCreateDto reqBody)
         {
             var createdGameDto = await _serviceManager.GameService.CreateGameAsync(reqBody, tournamentId);
