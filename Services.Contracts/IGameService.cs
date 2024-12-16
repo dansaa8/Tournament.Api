@@ -1,4 +1,5 @@
-﻿using Tournament.Core.Dto;
+﻿using Microsoft.AspNetCore.JsonPatch;
+using Tournament.Core.Dto;
 using Tournament.Core.Dto.Queries;
 using Tournament.Core.Req;
 
@@ -12,4 +13,6 @@ public interface IGameService
         GameQueryParameters queryParams);
 
     Task<GameDto> CreateGameAsync(GameCreateDto gameCreateDto, int tournamentId);
+
+    Task<GameDto> UpdateGameAsync(int gameId, JsonPatchDocument<GameUpdateDto> patchDocument);
 }

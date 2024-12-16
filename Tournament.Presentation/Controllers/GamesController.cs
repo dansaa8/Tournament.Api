@@ -39,6 +39,7 @@ namespace Tournament.Presentation.Controllers
             var createdGameDto = await _serviceManager.GameService.CreateGameAsync(reqBody, tournamentId);
             return CreatedAtAction(nameof(GetOneGame), new { id = tournamentId }, createdGameDto);
         }
+
         //
         // [HttpPut("{id}")]
         // public async Task<IActionResult> PutGame(int id, GameUpdateDto reqBody)
@@ -53,25 +54,22 @@ namespace Tournament.Presentation.Controllers
         // }
         //
         //
-        // [HttpPatch("{gameId}")]
-        // public async Task<ActionResult<GameDto>> PatchGame(int gameId, JsonPatchDocument<GameUpdateDto> patchDocument)
-        // {
-        //     if (patchDocument is null) return BadRequest("No patch document"); // Kollar patchdocument
-        //
-        //     var gameToPatch = await _uow.GameRepository.GetAsync(gameId); // Hämtar game som ska patchas
-        //     if (gameToPatch == null) return NotFound("Game not found"); // Om inget hittas med angivet id, return NotFound
-        //
-        //     var dto = _mapper.Map<GameUpdateDto>(gameToPatch); // Mappa om fetchade game till GameUpdateDto (samma som patchdocument)
-        //     patchDocument.ApplyTo(dto, ModelState); 
-        //
-        //     TryValidateModel(dto); // Kolla så att dto:n uppfyller dto-kraven/attributen; exempelvis [required] & [maxlength] för prop
-        //     if (!ModelState.IsValid) return UnprocessableEntity(ModelState); // Returnerar felmeddelanden om kraven ej uppfylls.
-        //
-        //     _mapper.Map(dto, gameToPatch); // Uppdaterar de förändrade/patchde fälten på den ursprungligt hämtade(och trackade) Game-entiten 
-        //     await _uow.CompleteAsync(); // Sparar förändringarna och propagerar de till databasen.
-        //
-        //     return NoContent();
-        // }
+        [HttpPatch("api/games/{gameId}")]
+        public async Task<ActionResult<GameDto>> PatchGame(int gameId, JsonPatchDocument<GameUpdateDto> patchDocument)
+        {
+            if (patchDocument == null)
+                return BadRequest("No patch document provided");
+
+            var gameToPatch = new GameUpdateDto(); // Dummy instance for validation
+            patchDocument.ApplyTo(gameToPatch, ModelState);
+
+            if (!ModelState.IsValid)
+                return UnprocessableEntity(ModelState);
+
+            var updatedGame = await _serviceManager.GameService.UpdateGameAsync(gameId, patchDocument);
+
+            return Ok(updatedGame);
+        }
 
 
         // [HttpDelete("{id}")]
