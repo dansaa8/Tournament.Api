@@ -25,13 +25,7 @@ public class GameService : IGameService
 
     public async Task<GameDto> GetGameByIdAsync(int id)
     {
-        Game? game = await _uow.GameRepository.GetGameByIdAsync(id);
-
-        if (game == null)
-        {
-            throw new NotFoundException($"Game with id {id} was not found.");
-        }
-
+        var game = await FetchGameAndCheckForNull(id);
         return _mapper.Map<GameDto>(game);
     }
 
@@ -73,26 +67,37 @@ public class GameService : IGameService
         if (patchDocument == null)
             throw new ArgumentNullException(nameof(patchDocument), "Patch document is null.");
 
-        var game = await _uow.GameRepository.GetGameByIdAsync(gameId, true);
-        if (game == null)
-            throw new NotFoundException($"Game with id {gameId} was not found.");
+        var game = await FetchGameAndCheckForNull(gameId, true);
 
         var gameToPatch = _mapper.Map<GameUpdateDto>(game);
         patchDocument.ApplyTo(gameToPatch);
 
-        // Update entity fetched from db
         _mapper.Map(gameToPatch, game);
         await _uow.CompleteAsync();
 
         return _mapper.Map<GameDto>(game);
     }
 
+    public async Task<GameDto> PutGameAsync(int gameId, GameUpdateDto reqBody)
+    {
+        var game = await FetchGameAndCheckForNull(gameId, true);
+        _mapper.Map(reqBody, game);
+        await _uow.CompleteAsync();
+        return _mapper.Map<GameDto>(game);
+    }
+
     public async Task DeleteGameAsync(int gameId)
+    {
+        var game = await FetchGameAndCheckForNull(gameId, true);
+        _uow.GameRepository.Delete(game);
+        await _uow.CompleteAsync();
+    }
+
+    private async Task<Game> FetchGameAndCheckForNull(int gameId, bool trackChanges = false)
     {
         var game = await _uow.GameRepository.GetGameByIdAsync(gameId, true);
         if (game == null)
             throw new NotFoundException($"Game with id {gameId} was not found.");
-        _uow.GameRepository.Delete(game);
-        await _uow.CompleteAsync();
+        return game;
     }
 }

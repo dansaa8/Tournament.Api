@@ -40,20 +40,13 @@ namespace Tournament.Presentation.Controllers
             return CreatedAtAction(nameof(GetOneGame), new { id = tournamentId }, createdGameDto);
         }
 
-        //
-        // [HttpPut("{id}")]
-        // public async Task<IActionResult> PutGame(int id, GameUpdateDto reqBody)
-        // {
-        //     Game? game = await _uow.GameRepository.GetAsync(id);
-        //     if (game == null) return NotFound();
-        //
-        //     _mapper.Map(reqBody, game);
-        //
-        //     await _uow.CompleteAsync();
-        //     return Ok(_mapper.Map<GameDto>(game));
-        // }
-        //
-        //
+        [HttpPut("api/games/{gameId}")]
+        public async Task<IActionResult> PutGame(int gameId, GameUpdateDto reqBody)
+        {
+            var updatedGame = await _serviceManager.GameService.PutGameAsync(gameId, reqBody);
+            return Ok(updatedGame);
+        }
+      
         [HttpPatch("api/games/{gameId}")]
         public async Task<ActionResult<GameDto>> PatchGame(int gameId, JsonPatchDocument<GameUpdateDto> patchDocument)
         {
