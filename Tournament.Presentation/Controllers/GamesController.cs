@@ -72,21 +72,11 @@ namespace Tournament.Presentation.Controllers
         }
 
 
-        // [HttpDelete("{id}")]
-        // public async Task<IActionResult> DeleteGame(int id)
-        // {
-        //     Game? game = await _uow.GameRepository.GetAsync(id);
-        //     if (game == null) return NotFound();
-        //
-        //     _uow.GameRepository.Remove(game);
-        //     await _uow.CompleteAsync();
-        //
-        //     return NoContent();
-        // }
-
-        //private bool GameExists(int id)
-        //{
-        //    return _uow.GameRepository.AnyAsync(id);
-        //}
+        [HttpDelete("api/games/{gameId}")]
+        public async Task<IActionResult> DeleteGame(int gameId)
+        {
+            await _serviceManager.GameService.DeleteGameAsync(gameId);
+            return NoContent();
+        }
     }
 }

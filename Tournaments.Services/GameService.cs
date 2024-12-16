@@ -86,4 +86,13 @@ public class GameService : IGameService
 
         return _mapper.Map<GameDto>(game);
     }
+
+    public async Task DeleteGameAsync(int gameId)
+    {
+        var game = await _uow.GameRepository.GetGameByIdAsync(gameId, true);
+        if (game == null)
+            throw new NotFoundException($"Game with id {gameId} was not found.");
+        _uow.GameRepository.Delete(game);
+        await _uow.CompleteAsync();
+    }
 }
