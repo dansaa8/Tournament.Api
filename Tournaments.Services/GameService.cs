@@ -62,7 +62,7 @@ public class GameService : IGameService
         return _mapper.Map<GameDto>(newGameEntity);
     }
 
-    public async Task<GameDto> UpdateGameAsync(int gameId, JsonPatchDocument<GameUpdateDto> patchDocument)
+    public async Task<GameDto> PatchGameAsync(int gameId, JsonPatchDocument<GameUpdateDto> patchDocument)
     {
         if (patchDocument == null)
             throw new ArgumentNullException(nameof(patchDocument), "Patch document is null.");

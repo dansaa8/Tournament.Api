@@ -59,12 +59,11 @@ namespace Tournament.Presentation.Controllers
             if (!ModelState.IsValid)
                 return UnprocessableEntity(ModelState);
 
-            var updatedGame = await _serviceManager.GameService.UpdateGameAsync(gameId, patchDocument);
+            var updatedGame = await _serviceManager.GameService.PatchGameAsync(gameId, patchDocument);
 
             return Ok(updatedGame);
         }
-
-
+        
         [HttpDelete("api/games/{gameId}")]
         public async Task<IActionResult> DeleteGame(int gameId)
         {
